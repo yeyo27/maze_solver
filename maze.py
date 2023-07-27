@@ -63,12 +63,23 @@ class Cell:
     def draw(self):
         if self.has_top_wall:
             self._win.draw_line(Line(Point(self._x1, self._y1), Point(self._x2, self._y1)), "black")
+        else:
+            self._win.draw_line(Line(Point(self._x1, self._y1), Point(self._x2, self._y1)), "white")
+
         if self.has_left_wall:
             self._win.draw_line(Line(Point(self._x1, self._y1), Point(self._x1, self._y2)), "black")
+        else:
+            self._win.draw_line(Line(Point(self._x1, self._y1), Point(self._x1, self._y2)), "white")
+
         if self.has_right_wall:
             self._win.draw_line(Line(Point(self._x2, self._y1), Point(self._x2, self._y2)), "black")
+        else:
+            self._win.draw_line(Line(Point(self._x2, self._y1), Point(self._x2, self._y2)), "white")
+
         if self.has_bottom_wall:
             self._win.draw_line(Line(Point(self._x1, self._y2), Point(self._x2, self._y2)), "black")
+        else:
+            self._win.draw_line(Line(Point(self._x1, self._y2), Point(self._x2, self._y2)), "white")
 
     def draw_move(self, to_cell: "Cell", undo: bool = False):
         initial_cell_center = Point((self._x1 + self._x2) // 2, (self._y1 + self._y2) // 2)
@@ -118,19 +129,22 @@ class Maze:
             self._win.redraw()
             sleep(0.05)
 
+    def _break_entrance_and_exit(self):
+        entrance_cell = self._cells[0][0]
+        entrance_cell.has_top_wall = False
+
+        exit_cell = self._cells[self._num_cols - 1][self._num_rows - 1]
+        exit_cell.has_bottom_wall = False
+        if self._win:
+            entrance_cell.draw()
+            exit_cell.draw()
+
 
 def main():
     win = Window(800, 600)
-    p1 = Point(20, 20)
-    p2 = Point(40, 40)
-    p3 = Point(60, 60)
-    p4 = Point(80, 80)
-    cell1 = Cell(p1.x, p1.y, p2.x, p2.y, win)
-    cell2 = Cell(p3.x, p3.y, p4.x, p4.y, win)
-    cell2.has_right_wall = False
-    cell1.draw()
-    cell2.draw()
-    cell1.draw_move(cell2)
+    num_cols = 12
+    num_rows = 10
+    m1 = Maze(0, 0, num_rows, num_cols, 10, 10)
     win.wait_for_close()
 
 
