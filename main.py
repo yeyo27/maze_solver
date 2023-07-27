@@ -68,6 +68,14 @@ class Cell:
         if self.has_bottom_wall:
             self._win.draw_line(Line(Point(self._x1, self._y2), Point(self._x2, self._y2)), "black")
 
+    def draw_move(self, to_cell: "Cell", undo=False):
+        initial_cell_center = Point((self._x1 + self._x2) // 2, (self._y1 + self._y2) // 2)
+        to_cell_center = Point((to_cell._x1 + to_cell._x2) // 2, (to_cell._y1 + to_cell._y2) // 2)
+        if not undo:
+            self._win.draw_line(Line(initial_cell_center, to_cell_center), "red")
+        else:
+            self._win.draw_line(Line(initial_cell_center, to_cell_center), "black")
+
 
 def main():
     win = Window(800, 600)
@@ -77,6 +85,7 @@ def main():
     p4 = Point(80, 80)
     cell1 = Cell(p1.x, p1.y, p2.x, p2.y, win)
     cell2 = Cell(p3.x, p3.y, p4.x, p4.y, win)
+    cell2.has_right_wall = False
     cell1.draw()
     cell2.draw()
     win.wait_for_close()
