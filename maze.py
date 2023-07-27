@@ -25,7 +25,7 @@ class Window:
     def __init__(self, width: int, height: int):
         self.__root = Tk()
         self.__root.title("Maze Solver")
-        self.canvas = Canvas(master=self.__root, width=width, height=height)
+        self.canvas = Canvas(master=self.__root, width=width, height=height, background="white")
         self.canvas.pack()
         self.window_is_running = False
         self.__root.protocol("WM_DELETE_WINDOW", self.close)
@@ -103,6 +103,7 @@ class Maze:
         self._cell_size_y = cell_size_y
         self._win = win
         self._create_cells()
+        self._break_entrance_and_exit()
 
     def _create_cells(self):
         self._cells = []
@@ -119,10 +120,14 @@ class Maze:
 
                 new_row.append(new_cell)
 
-                if self._win:
-                    new_cell.draw()
+                self._draw_cell(new_cell)
 
             self._cells.append(new_row)
+
+    def _draw_cell(self, cell: Cell):
+        if self._win:
+            cell.draw()
+            self._animate()
 
     def _animate(self):
         if self._win:
@@ -132,19 +137,18 @@ class Maze:
     def _break_entrance_and_exit(self):
         entrance_cell = self._cells[0][0]
         entrance_cell.has_top_wall = False
+        self._draw_cell(entrance_cell)
 
         exit_cell = self._cells[self._num_cols - 1][self._num_rows - 1]
         exit_cell.has_bottom_wall = False
-        if self._win:
-            entrance_cell.draw()
-            exit_cell.draw()
+        self._draw_cell(exit_cell)
 
 
 def main():
     win = Window(800, 600)
     num_cols = 12
     num_rows = 10
-    m1 = Maze(0, 0, num_rows, num_cols, 10, 10)
+    Maze(10, 10, num_rows, num_cols, 10, 10, win)
     win.wait_for_close()
 
 
