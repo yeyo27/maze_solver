@@ -1,5 +1,7 @@
 from tkinter import Tk, BOTH, Canvas
 
+from time import sleep
+
 
 class Point:
     def __init__(self, x: int, y: int):
@@ -45,7 +47,7 @@ class Window:
 
 
 class Cell:
-    def __init__(self, x1: int, y1: int, x2: int, y2: int, win: Window):
+    def __init__(self, x1: int, y1: int, x2: int, y2: int, win: Window = None):
         # Top left corner of cell
         self._x1 = x1
         self._y1 = y1
@@ -68,13 +70,53 @@ class Cell:
         if self.has_bottom_wall:
             self._win.draw_line(Line(Point(self._x1, self._y2), Point(self._x2, self._y2)), "black")
 
-    def draw_move(self, to_cell: "Cell", undo=False):
+    def draw_move(self, to_cell: "Cell", undo: bool = False):
         initial_cell_center = Point((self._x1 + self._x2) // 2, (self._y1 + self._y2) // 2)
         to_cell_center = Point((to_cell._x1 + to_cell._x2) // 2, (to_cell._y1 + to_cell._y2) // 2)
         if not undo:
             self._win.draw_line(Line(initial_cell_center, to_cell_center), "red")
         else:
             self._win.draw_line(Line(initial_cell_center, to_cell_center), "black")
+
+
+class Maze:
+    def __init__(self, x1: int, y1: int,
+                 num_rows: int, num_cols: int,
+                 cell_size_x: int, cell_size_y: int,
+                 win: Window = None):
+        self._x1 = x1
+        self._y1 = y1
+        self._num_rows = num_rows
+        self._num_cols = num_cols
+        self._cell_size_x = cell_size_x
+        self._cell_size_y = cell_size_y
+        self._win = win
+        self._create_cells()
+
+    def _create_cells(self):
+        self._cells = []
+        for i in range(self._num_cols):
+            new_row = []
+            for j in range(self._num_rows):
+                new_cell = Cell(
+                    self._x1 + i * self._cell_size_x,
+                    self._y1 + j * self._cell_size_y,
+                    self._x1 + (i + 1) * self._cell_size_x,
+                    self._y1 + (j + 1) * self._cell_size_y,
+                    self._win
+                )
+
+                new_row.append(new_cell)
+
+                if self._win:
+                    new_cell.draw()
+
+            self._cells.append(new_row)
+
+    def _animate(self):
+        if self._win:
+            self._win.redraw()
+            sleep(0.05)
 
 
 def main():
@@ -88,6 +130,7 @@ def main():
     cell2.has_right_wall = False
     cell1.draw()
     cell2.draw()
+    cell1.draw_move(cell2)
     win.wait_for_close()
 
 
